@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ExerciseController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -37,4 +38,15 @@ Route::group([
     Route::post('/updateCategory', [CategoryController::class, 'updateCategory'])->middleware('auth:sanctum');
     Route::get('/getAllCategory', [CategoryController::class, 'getAllCategory'])->middleware('auth:sanctum');
     Route::delete('/deleteCategory', [CategoryController::class, 'deleteCategory'])->middleware('auth:sanctum');
+});
+
+
+Route::group([
+    'prefix' => 'exercise'
+], function () {
+
+    Route::post('/addNewExercise', [ExerciseController::class, 'addNewExercise'])->middleware('auth:sanctum')->middleware('auth:sanctum');
+    Route::post('/updateExercise', [ExerciseController::class, 'updateExercise'])->middleware('auth:sanctum');
+    Route::get('/getAllExercises', [ExerciseController::class, 'getAllExercises'])->middleware('auth:sanctum');
+    Route::delete('/deleteExercise', [ExerciseController::class, 'deleteExercise'])->middleware('auth:sanctum');
 });

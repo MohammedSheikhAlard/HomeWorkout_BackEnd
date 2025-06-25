@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Exercise extends Model
 {
@@ -31,5 +32,10 @@ class Exercise extends Model
     public function admin()
     {
         return $this->belongsTo(Admin::class);
+    }
+
+    public function getImageUrlAttribute()
+    {
+        return $this->image_path ? Storage::url($this->image_path) : null;
     }
 }
