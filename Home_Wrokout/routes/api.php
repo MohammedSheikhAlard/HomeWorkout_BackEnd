@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ExerciseController;
+use App\Http\Controllers\WalletController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -49,4 +50,14 @@ Route::group([
     Route::post('/updateExercise', [ExerciseController::class, 'updateExercise'])->middleware('auth:sanctum');
     Route::get('/getAllExercises', [ExerciseController::class, 'getAllExercises'])->middleware('auth:sanctum');
     Route::delete('/deleteExercise', [ExerciseController::class, 'deleteExercise'])->middleware('auth:sanctum');
+});
+Route::group([
+    'prefix' => 'wallet'
+], function () {
+    Route::get('/getbalance', [WalletController::class, 'getBalance'])->middleware('auth:sanctum');
+    Route::post('/deposit', [WalletController::class, 'deposit'])->middleware('auth:sanctum');
+    Route::post('/withdraw', [WalletController::class, 'withdraw'])->middleware('auth:sanctum');
+    Route::get('/transactions', [WalletController::class, 'getTransactions'])->middleware('auth:sanctum');
+    Route::post('/create', [WalletController::class, 'createWallet'])->middleware('auth:sanctum');
+
 });
