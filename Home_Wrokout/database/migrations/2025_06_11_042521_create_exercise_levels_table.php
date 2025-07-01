@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('exercise_levels', function (Blueprint $table) {
             $table->id();
             $table->foreignId('level_id')->references('id')->on('levels');
-            $table->foreignId('exercies_id')->references('id')->on('exercises');
+            $table->foreignId('exercise_id')->references('id')->on('exercises');
             $table->integer('calories');
             $table->integer('number_of_rips');
             $table->timestamps();

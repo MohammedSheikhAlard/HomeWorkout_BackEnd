@@ -15,41 +15,37 @@ use Illuminate\Support\Facades\Auth;
 class WalletController extends Controller
 {
 
-    use apiResponseTrait;    
+    use apiResponseTrait;
 
-   public function createWallet(Request $request)
-   {
+    public function createWallet(Request $request)
+    {
 
-    $user = $request->user();
-    if ($user->wallet) {
-        return response()->json(['message' => 'You already have a wallet',], 400);
+        $user = $request->user();
+        if ($user->wallet) {
+            return response()->json(['message' => 'You already have a wallet',], 400);
+        }
+
+        $wallet = Wallet::create([
+            'user_id' => $user->id,
+            'balance' => 0,
+        ]);
+
+        return $this->apiResponse($wallet, "Wallet created successfully", 200);
     }
 
-    $wallet = Wallet::create([
-        'user_id' => $user->id,
-        'balance' => 0,
-    ]);
 
-    return $this->apiResponse($wallet,"Wallet created successfully",200);  
-
-} 
-
-
-
-    
     public function getBalance(Request $request)
     {
-        
+
         $wallet = $request->user()->wallet;
-        
-        return $this->apiResponse($wallet,"this is your balance",200);
-    
+
+        return $this->apiResponse($wallet, "this is your balance", 200);
     }
 
-    
+
     public function deposit(Request $request)
     {
-          $request->validate([
+        $request->validate([
             'amount' => 'required|numeric|min:0.1',
         ]);
 
@@ -62,9 +58,7 @@ class WalletController extends Controller
             'type' => 'deposit',
             'wallet_id' => $wallet->id,
         ]);
-        return $this->apiResponse($wallet,"Amount deposited successfully",200);
-
-      
+        return $this->apiResponse($wallet, "Amount deposited successfully", 200);
     }
     //**********************************
 
@@ -89,19 +83,14 @@ class WalletController extends Controller
             'type' => 'withdraw',
             'wallet_id' => $wallet->id,
         ]);
-        return $this->apiResponse($wallet,"Amount withdrawn successfully",200);
-
+        return $this->apiResponse($wallet, "Amount withdrawn successfully", 200);
     }
 
 
     public function getTransactions(Request $request)
     {
         $transactions = $request->user()->wallet->transaction()->get();
-      
-        return $this->apiResponse($transactions,"The operations were fetched successfully",200);
+
+        return $this->apiResponse($transactions, "The operations were fetched successfully", 200);
     }
-
-
-   
 }
-

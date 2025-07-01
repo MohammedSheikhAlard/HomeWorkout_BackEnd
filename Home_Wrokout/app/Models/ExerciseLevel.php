@@ -12,12 +12,12 @@ class ExerciseLevel extends Model
 
     protected $fillable = [
         'level_id',
-        'exercies_id',
+        'exercise_id',
         'calories',
         'number_of_rips',
     ];
 
-    public function exercies()
+    public function exercise()
     {
         return $this->belongsTo(Exercise::class);
     }

@@ -1,12 +1,13 @@
 <?php
 
-use App\Http\Controllers\AdminController;
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\ExerciseController;
-use App\Http\Controllers\WalletController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\WalletController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ExerciseController;
+use App\Http\Controllers\ExerciseLevelController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -59,5 +60,16 @@ Route::group([
     Route::post('/withdraw', [WalletController::class, 'withdraw'])->middleware('auth:sanctum');
     Route::get('/transactions', [WalletController::class, 'getTransactions'])->middleware('auth:sanctum');
     Route::post('/create', [WalletController::class, 'createWallet'])->middleware('auth:sanctum');
+});
 
+
+Route::group([
+    'prefix' => 'exerciseLevel'
+], function () {
+
+    Route::post('/AddExerciseToLevel', [ExerciseLevelController::class, 'AddExerciseToLevel'])->middleware('auth:sanctum');
+    Route::get('/getAllExerciseLevels', [ExerciseLevelController::class, 'getAllExerciseLevels']);
+    Route::delete('/deleteExerciseLevel', [ExerciseLevelController::class, 'deleteExerciseLevel'])->middleware('auth:sanctum');
+    Route::post('/updateExerciseLevel', [ExerciseLevelController::class, 'updateExerciseLevel'])->middleware('auth:sanctum');
+    Route::get('/getAllExerciseLevelsByLevelId', [ExerciseLevelController::class, 'getAllExerciseLevelsByLevelId']);
 });
