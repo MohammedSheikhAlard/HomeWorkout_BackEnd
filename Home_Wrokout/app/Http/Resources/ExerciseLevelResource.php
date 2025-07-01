@@ -14,6 +14,13 @@ class ExerciseLevelResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return parent::toArray($request);
+        return [
+            'id' => $this->id,
+            'level_id' => $this->level_id,
+            'exercise_id' => $this->exercise_id,
+            'calories' => $this->calories,
+            'number_of_rips' => $this->number_of_rips,
+            'exercise' => new ExerciseResource($this->whenLoaded('exercise'))
+        ];
     }
 }

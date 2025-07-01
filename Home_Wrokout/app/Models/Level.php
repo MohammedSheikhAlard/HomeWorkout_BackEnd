@@ -11,12 +11,11 @@ class Level extends Model
     use HasFactory;
 
     protected $fillable = [
-        'level',
         'name',
         'description',
     ];
 
-    public function exercieses()
+    public function exercise()
     {
         return $this->belongsToMany(Exercise::class, 'exercise_levels');
     }

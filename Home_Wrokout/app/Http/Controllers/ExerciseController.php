@@ -13,47 +13,6 @@ class ExerciseController extends Controller
 {
     use apiResponseTrait;
 
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreExerciseRequest $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Exercise $exercise)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateExerciseRequest $request, Exercise $exercise)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Exercise $exercise)
-    {
-        //
-    }
-
-
     public function addNewExercise(Request $request)
     {
         $fildes = $request->validate([
@@ -81,18 +40,19 @@ class ExerciseController extends Controller
 
         $exercise->save();
 
-        return $this->apiResponse($exercise, "exercies added sussessfully", 200);
+        return $this->apiResponse($exercise, "exercise added sussessfully", 200);
     }
 
     public function getAllExercises()
     {
         $exercises  = Exercise::all();
 
+
         if ($exercises == null) {
             return $this->apiResponse(null, "something went wrong", 400);
         }
 
-        return $this->apiResponse(new ExerciseResource($exercises), "This is all exercieses", 200);
+        return $this->apiResponse(ExerciseResource::collection($exercises), "This is all exercisees", 200);
     }
 
     public function updateExercise(Request $request)
@@ -124,7 +84,7 @@ class ExerciseController extends Controller
         $exercise = Exercise::find($request->id);
 
         if ($exercise == null) {
-            return $this->apiResponse(null, "We couldn't find your exercies", 400);
+            return $this->apiResponse(null, "We couldn't find your exercise", 400);
         }
         $exercise->delete();
 
