@@ -18,15 +18,20 @@ trait apiResponseTrait
                 'message ' => $message,
                 'data ' => $data,
             ];
-        } else {
+        } else if ($data != null) {
 
             $array = [
                 'status ' => $status,
                 'message ' => $message,
                 'data ' => $data,
             ];
-        }
+        } else {
 
+            $array = [
+                'status ' => $status,
+                'message ' => $message,
+            ];
+        }
 
         return response($array);
     }

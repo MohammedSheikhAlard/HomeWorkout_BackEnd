@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\PlanController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\WalletController;
 use App\Http\Controllers\CategoryController;
@@ -72,4 +73,18 @@ Route::group([
     Route::delete('/deleteExerciseLevel', [ExerciseLevelController::class, 'deleteExerciseLevel'])->middleware('auth:sanctum');
     Route::post('/updateExerciseLevel', [ExerciseLevelController::class, 'updateExerciseLevel'])->middleware('auth:sanctum');
     Route::get('/getAllExerciseLevelsByLevelId', [ExerciseLevelController::class, 'getAllExerciseLevelsByLevelId']);
+});
+
+
+Route::group([
+    'prefix' => 'plan'
+], function () {
+
+
+    Route::post('addNewPlan', [PlanController::class, 'addNewPlan'])->middleware('auth:sanctum');
+    Route::post('updatePlan', [PlanController::class, 'updatePlan'])->middleware('auth:sanctum');
+    Route::delete('deletePlan', [PlanController::class, 'deletePlan'])->middleware('auth:sanctum');
+    Route::post('restorePlan', [PlanController::class, 'restorePlan'])->middleware('auth:sanctum');
+    Route::get('getPlan', [PlanController::class, 'getPlan']);
+    Route::get('getAllPlans', [PlanController::class, 'getAllPlans']);
 });
