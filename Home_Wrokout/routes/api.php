@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PlanController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\WalletController;
+use App\Http\Controllers\PlanDayController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ExerciseController;
 use App\Http\Controllers\ExerciseLevelController;
@@ -87,4 +88,16 @@ Route::group([
     Route::post('restorePlan', [PlanController::class, 'restorePlan'])->middleware('auth:sanctum');
     Route::get('getPlan', [PlanController::class, 'getPlan']);
     Route::get('getAllPlans', [PlanController::class, 'getAllPlans']);
+});
+
+
+Route::group([
+    'prefix' => 'planDay'
+], function () {
+
+
+    Route::post('addNewPlanDay', [PlanDayController::class, 'addNewPlanDay'])->middleware('auth:sanctum');
+    Route::post('updatePlanDay', [PlanDayController::class, 'updatePlanDay'])->middleware('auth:sanctum');
+    Route::get('getPlanDay', [PlanDayController::class, 'getPlanDay']);
+    Route::get('getAllPlanDays', [PlanDayController::class, 'getAllPlanDays']);
 });
