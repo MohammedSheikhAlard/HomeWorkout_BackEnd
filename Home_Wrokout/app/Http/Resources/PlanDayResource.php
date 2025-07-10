@@ -14,6 +14,12 @@ class PlanDayResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return parent::toArray($request);
+        return [
+            'id' => $this->id,
+            'day_number' => $this->day_number,
+            'total_calories' => $this->total_calories,
+            'is_rest_day' => $this->is_rest_day,
+            'plan_id' => $this->plan_id,
+        ];
     }
 }
