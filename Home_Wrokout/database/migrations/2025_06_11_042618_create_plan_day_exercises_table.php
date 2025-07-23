@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('plan_day_exercises', function (Blueprint $table) {
             $table->id();
             $table->foreignId('plan_day_id')->references('id')->on('plan_days');
-            $table->foreignId('exercise_level_id')->references('id')->on('exercise_levels');
+            $table->foreignId('exercies_level_id')->references('id')->on('exercise_levels');
             $table->integer('exercies_order');
             $table->timestamps();
         });

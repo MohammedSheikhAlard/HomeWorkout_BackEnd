@@ -10,6 +10,7 @@ use App\Http\Controllers\PlanDayController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ExerciseController;
 use App\Http\Controllers\ExerciseLevelController;
+use App\Http\Controllers\PlanDayExerciseController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -100,4 +101,16 @@ Route::group([
     Route::post('updatePlanDay', [PlanDayController::class, 'updatePlanDay'])->middleware('auth:sanctum');
     Route::get('getPlanDay', [PlanDayController::class, 'getPlanDay']);
     Route::get('getAllPlanDays', [PlanDayController::class, 'getAllPlanDays']);
+});
+
+
+Route::group([
+    'prefix' => 'planDayExercise'
+], function () {
+
+
+    Route::post('addNewPlanDayExercise', [PlanDayExerciseController::class, 'addNewPlanDayExercise'])->middleware('auth:sanctum');
+    Route::post('updatePlanDayExercise', [PlanDayExerciseController::class, 'updatePlanDayExercise'])->middleware('auth:sanctum');
+    Route::get('getPlanDayExercise', [PlanDayExerciseController::class, 'getPlanDayExercise']);
+    Route::get('getAllPlanDayExercises', [PlanDayExerciseController::class, 'getAllPlanDayExercises']);
 });
