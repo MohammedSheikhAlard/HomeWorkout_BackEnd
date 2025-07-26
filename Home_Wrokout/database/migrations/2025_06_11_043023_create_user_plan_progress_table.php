@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('user_plan_progress', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->references('id')->on('users');
+            $table->foreignId('user_plan_id')->references('id')->on('user_plans');
             $table->foreignId('plan_day_id')->references('id')->on('plan_days');
             $table->boolean('is_trained');
             $table->date('date');
