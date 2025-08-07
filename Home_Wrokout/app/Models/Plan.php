@@ -38,4 +38,9 @@ class Plan extends Model
     {
         return $this->belongsToMany(User::class, 'user_plans');
     }
+
+    public function userPlans()
+    {
+        return $this->hasMany(UserPlan::class);
+    }
 }

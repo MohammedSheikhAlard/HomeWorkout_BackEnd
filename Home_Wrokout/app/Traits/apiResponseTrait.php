@@ -14,22 +14,22 @@ trait apiResponseTrait
 
             $array = [
                 'token' => $token,
-                'status ' => $status,
-                'message ' => $message,
+                'status' => $status,
+                'message' => $message,
                 'data ' => $data,
             ];
         } else if ($data != null) {
 
             $array = [
-                'status ' => $status,
-                'message ' => $message,
-                'data ' => $data,
+                'status' => $status,
+                'message' => $message,
+                'data' => $data,
             ];
         } else {
 
             $array = [
-                'status ' => $status,
-                'message ' => $message,
+                'status' => $status,
+                'message' => $message,
             ];
         }
 

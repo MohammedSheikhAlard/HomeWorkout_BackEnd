@@ -15,6 +15,7 @@ class ExerciseLevel extends Model
         'exercise_id',
         'calories',
         'number_of_rips',
+        'timer',
     ];
 
     public function exercise()

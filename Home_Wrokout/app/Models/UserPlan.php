@@ -16,16 +16,17 @@ class UserPlan extends Model
         'plan_id',
         'start_date',
         'end_date',
+        'current_day',
         'status',
     ];
 
     public function user()
     {
-        return $this->BelongsTo(User::class);
+        return $this->belongsTo(User::class);
     }
 
     public function plan()
     {
-        return $this->BelongsTo(Plan::class);
+        return $this->belongsTo(Plan::class);
     }
 }

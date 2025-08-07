@@ -98,4 +98,33 @@ class ExerciseLevelController extends Controller
 
         return $this->apiResponse(ExerciseLevelResource::collection($exerciseLevels), 'All exercise levels by level id', 200);
     }
+
+    public function getExerciseLevelsByExerciesLevelId(Request $request)
+    {
+
+        $exerciseLevel = ExerciseLevel::with('exercise')->get();
+
+        $exerciseLevel = $exerciseLevel->where('id', "=", $request->id);
+
+        if ($exerciseLevel->isEmpty()) {
+            return $this->apiResponse(null, 'No exercise level found', 404);
+        }
+
+        return $this->apiResponse(ExerciseLevelResource::collection($exerciseLevel), 'exercise levels by Exercise level id', 200);
+    }
+
+    public function getExerciseLevelsByExerciesLevelIdandCategoryId(Request $request)
+    {
+
+        $exerciseLevel = ExerciseLevel::with('exercise')->get();
+
+        $exerciseLevel = $exerciseLevel->where('level_id', '=', $request->level_id)
+            ->where('exercise.category_id', '=', $request->category_id);
+
+        if ($exerciseLevel->isEmpty()) {
+            return $this->apiResponse(null, 'No exercise level with this categorie found', 404);
+        }
+
+        return $this->apiResponse(ExerciseLevelResource::collection($exerciseLevel), 'exercise levels by Exercise level id and categorie id', 200);
+    }
 }

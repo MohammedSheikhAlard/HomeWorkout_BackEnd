@@ -19,6 +19,9 @@ return new class extends Migration
             $table->string('password');
             $table->integer('tall')->nullable();
             $table->float('weight')->nullable();
+            $table->enum('gender', ['Male', 'Female'])->default('Male');
+            $table->float('BMI')->nullable();
+            $table->integer('target_calories')->nullable();
             $table->date('date_of_birth')->nullable();
             $table->time('reminder')->nullable();
             $table->foreignId('level_id')->references('id')->on('levels');

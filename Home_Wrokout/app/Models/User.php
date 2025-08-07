@@ -24,6 +24,9 @@ class User extends Authenticatable
         'password',
         'tall',
         'weight',
+        'gender',
+        'BMI',
+        'target_calories',
         'date_of_birth',
         'reminder',
         'level_id',
@@ -70,5 +73,10 @@ class User extends Authenticatable
     public function level()
     {
         return $this->hasOne(Level::class);
+    }
+
+    public function burned_calories()
+    {
+        return $this->hasMany(BurnedCalories::class);
     }
 }
