@@ -55,18 +55,27 @@ class CategoryController extends Controller
     public function updateCategory(Request $request)
     {
         $request->validate([
-            'id' => 'required',
+            'id' => 'required|exists:categories,id',
         ]);
 
         $category = category::find($request->id);
 
+
         $category->update([
             'name' => $request->has('name') ? $request->name : $category->name,
             'description' => $request->has('description') ? $request->description : $category->description,
-            'image_path' => $request->has('image_path') ? $request->image_path : $category->image_path,
         ]);
 
+        if ($request->has('image_path') == true) {
 
+
+            $imageName = $request->file('image_path')->getClientOriginalName();
+
+
+            $category->image_path = $request->file('image_path')->storeAs('categories', $imageName, 'mohammed');
+
+            $category->save();
+        }
 
         return $this->apiResponse($category, "Category Updated Successfully", 200);
     }

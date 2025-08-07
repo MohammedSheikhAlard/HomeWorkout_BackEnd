@@ -65,6 +65,7 @@ Route::group([
     Route::post('/updateCategory', [CategoryController::class, 'updateCategory'])->middleware('auth:sanctum');
     Route::get('/getAllCategory', [CategoryController::class, 'getAllCategory'])->middleware('auth:sanctum');
     Route::delete('/deleteCategory', [CategoryController::class, 'deleteCategory'])->middleware('auth:sanctum');
+    Route::get('/getAllUserCategory', [CategoryController::class, 'getAllUserCategory'])->middleware('auth:sanctum');
 });
 
 Route::group([
@@ -91,6 +92,7 @@ Route::group([
     Route::post('/withdraw', [WalletController::class, 'withdraw'])->middleware('auth:sanctum');
     Route::get('/transactions', [WalletController::class, 'getTransactions'])->middleware('auth:sanctum');
     Route::post('/create', [WalletController::class, 'createWallet'])->middleware('auth:sanctum');
+    Route::get('/checkUserHaveWallet', [WalletController::class, 'checkUserHaveWallet'])->middleware('auth:sanctum');
 });
 
 
@@ -153,6 +155,7 @@ Route::group([
     Route::post('/switch', [UserPlanController::class, 'switchToNextPlan'])->middleware('auth:sanctum');
     Route::delete('/delete', [UserPlanController::class, 'deletePlan'])->middleware('auth:sanctum');
     Route::get('/getPlan', [UserPlanController::class, 'getPlan'])->middleware('auth:sanctum');
+    Route::get('/getPlansByUserLevelID', [UserPlanController::class, 'getPlansByUserLevelID'])->middleware('auth:sanctum');
 });
 
 

@@ -93,4 +93,26 @@ class WalletController extends Controller
 
         return $this->apiResponse($transactions, "The operations were fetched successfully", 200);
     }
+
+    public function checkUserHaveWallet(Request $request)
+    {
+
+        $user = $request->user();
+
+        if ($user == null) {
+            return $this->apiResponse(null, "something went wrong", 400);
+        }
+
+        $wallet = Wallet::where('user_id', '=', $user->id)->get();
+
+        if ($wallet == null) {
+            return $this->apiResponse([
+                'have Wallet' => false
+            ], "there is no wallet for this user", 404);
+        }
+
+        return $this->apiResponse([
+            'have Wallet' => true
+        ], "there is wallet for this user", 200);
+    }
 }
