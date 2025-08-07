@@ -16,7 +16,8 @@ return new class extends Migration
             $table->foreignId('level_id')->references('id')->on('levels');
             $table->foreignId('exercise_id')->references('id')->on('exercises');
             $table->integer('calories');
-            $table->integer('number_of_rips');
+            $table->integer('number_of_rips')->nullable(true);
+            $table->integer('timer')->default(30);
             $table->timestamps();
         });
     }

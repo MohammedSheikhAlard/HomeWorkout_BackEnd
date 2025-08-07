@@ -58,10 +58,7 @@ class ExerciseController extends Controller
     public function updateExercise(Request $request)
     {
         $fildes = $request->validate([
-            'name' => 'required',
-            'description' => 'required',
-            'image_path' => 'required',
-            'category_id' => 'required',
+            'id' => 'required',
         ]);
 
         $admin = $request->user();
@@ -69,10 +66,10 @@ class ExerciseController extends Controller
         $exercise = Exercise::find($request->id);
 
         $exercise->update([
-            'name' => $request->name,
-            'description' => $request->description,
-            'image_path' => $request->image_path,
-            'category_id' => $request->category_id,
+            'name' => $request->has('name') ? $request->name : $exercise->name,
+            'description' => $request->has('description') ? $request->description : $exercise->description,
+            'image_path' => $request->has('image_path') ? $request->image_path : $exercise->image_path,
+            'category_id' => $request->has('category_id') ? $request->category_id : $exercise->category_id,
             'admin_id' => $admin->id,
         ]);
 

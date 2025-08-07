@@ -5,13 +5,17 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PlanController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\BurnedCaloriesController;
 use App\Http\Controllers\WalletController;
 use App\Http\Controllers\PlanDayController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ExerciseController;
 use App\Http\Controllers\ExerciseLevelController;
+use App\Http\Controllers\LevelController;
 use App\Http\Controllers\PlanDayExerciseController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserPlanController;
+use App\Models\BurnedCalories;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -24,6 +28,23 @@ Route::group([
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
+
+    Route::post('/editReminder', [UserController::class, 'editUserReminder'])->middleware('auth:sanctum');
+    Route::get('/getReminder', [UserController::class, 'getUserReminder'])->middleware('auth:sanctum');
+
+    Route::post('/editUserName', [UserController::class, 'editUserName'])->middleware('auth:sanctum');
+
+    Route::post('/editPassword', [UserController::class, 'editPassword'])->middleware('auth:sanctum');
+
+    Route::post('/editCaloriesGoal', [UserController::class, 'editCaloriesGoal'])->middleware('auth:sanctum');
+
+    Route::post('/editBMI', [UserController::class, 'editBMI'])->middleware('auth:sanctum');
+
+    Route::post('/updateLevel', [UserController::class, 'updateLevel'])->middleware('auth:sanctum');
+
+    Route::get('/getActivityData', [UserController::class, 'getActivityData'])->middleware('auth:sanctum');
+
+    Route::post('/updateTargetCalories', [UserController::class, 'updateTargetCalories'])->middleware('auth:sanctum');
 });
 
 Route::group([
@@ -46,6 +67,12 @@ Route::group([
     Route::delete('/deleteCategory', [CategoryController::class, 'deleteCategory'])->middleware('auth:sanctum');
 });
 
+Route::group([
+    'prefix' => 'level'
+], function () {
+
+    Route::get('/getAllLevel', [LevelController::class, 'getAllLevels'])->middleware('auth:sanctum');
+});
 
 Route::group([
     'prefix' => 'exercise'
@@ -76,6 +103,8 @@ Route::group([
     Route::delete('/deleteExerciseLevel', [ExerciseLevelController::class, 'deleteExerciseLevel'])->middleware('auth:sanctum');
     Route::post('/updateExerciseLevel', [ExerciseLevelController::class, 'updateExerciseLevel'])->middleware('auth:sanctum');
     Route::get('/getAllExerciseLevelsByLevelId', [ExerciseLevelController::class, 'getAllExerciseLevelsByLevelId']);
+    Route::get('/getExerciseLevelsByExerciesLevelId', [ExerciseLevelController::class, 'getExerciseLevelsByExerciesLevelId'])->middleware('auth:sanctum');
+    Route::get('/getExerciseLevelsByExerciesLevelIdandCategoryId', [ExerciseLevelController::class, 'getExerciseLevelsByExerciesLevelIdandCategoryId'])->middleware('auth:sanctum');
 });
 
 
@@ -116,11 +145,23 @@ Route::group([
     Route::get('getAllPlanDayExercises', [PlanDayExerciseController::class, 'getAllPlanDayExercises']);
 });
 Route::group([
-    'prefix' =>'UserPlan'
+    'prefix' => 'userPlan'
 
-],function(){
+], function () {
 
     Route::post('/link', [UserPlanController::class, 'LinkPlanToUser'])->middleware('auth:sanctum');
+    Route::post('/switch', [UserPlanController::class, 'switchToNextPlan'])->middleware('auth:sanctum');
+    Route::delete('/delete', [UserPlanController::class, 'deletePlan'])->middleware('auth:sanctum');
+    Route::get('/getPlan', [UserPlanController::class, 'getPlan'])->middleware('auth:sanctum');
+});
+
+
+Route::group([
+    'prefix' => 'burnedCalorie'
+
+], function () {
+
+    Route::post('/addExerciseCaloriesToday', [BurnedCaloriesController::class, 'addExerciseCaloriesToday'])->middleware('auth:sanctum');
     Route::post('/switch', [UserPlanController::class, 'switchToNextPlan'])->middleware('auth:sanctum');
     Route::delete('/delete', [UserPlanController::class, 'deletePlan'])->middleware('auth:sanctum');
 });

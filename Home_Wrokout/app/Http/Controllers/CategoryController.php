@@ -22,7 +22,8 @@ class CategoryController extends Controller
     {
         $fileds = $request->validate([
             'name' => 'required',
-            'description' => 'required'
+            'description' => 'required',
+            'image_path' => 'required'
         ]);
 
         $admin = $request->user();
@@ -30,12 +31,23 @@ class CategoryController extends Controller
         $category = category::create([
             'name' => $request->name,
             'description' => $request->description,
+            'image_path' => $request->image_path,
             'admin_id' => $admin->id,
         ]);
+
 
         if (!$category) {
             return $this->apiResponse(null, "The provided credentials are incorrect", 404);
         }
+
+        $imageName = $request->file('image_path')->getClientOriginalName();
+
+        if ($request->hasFile('image_path')) {
+            $category->image_path = $request->file('image_path')->storeAs('categories', $imageName, 'mohammed');
+        }
+
+        $category->save();
+
 
         return $this->apiResponse($category, "category added sussessfully", 200);
     }
@@ -43,18 +55,18 @@ class CategoryController extends Controller
     public function updateCategory(Request $request)
     {
         $request->validate([
-            'name' => 'required',
-            'description' => 'required',
-            'id' => 'required'
+            'id' => 'required',
         ]);
 
         $category = category::find($request->id);
 
-
         $category->update([
-            'name' => $request->name,
-            'description' => $request->description
+            'name' => $request->has('name') ? $request->name : $category->name,
+            'description' => $request->has('description') ? $request->description : $category->description,
+            'image_path' => $request->has('image_path') ? $request->image_path : $category->image_path,
         ]);
+
+
 
         return $this->apiResponse($category, "Category Updated Successfully", 200);
     }
@@ -80,5 +92,16 @@ class CategoryController extends Controller
         $category->delete();
 
         return "category deleted successfully";
+    }
+
+    public function getAllUserCategory()
+    {
+        $categories = category::get()->all();
+
+        if ($categories ==  null) {
+            return $this->apiResponse(null, "something went wrong", 400);
+        }
+
+        return $this->apiResponse(new CategoryResource($categories), "this is all categories", 200);
     }
 }

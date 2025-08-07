@@ -6,7 +6,9 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use App\Traits\apiResponseTrait;
 use Illuminate\Support\Facades\DB;
+use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Auth\Events\Validated;
 
 class AuthController extends Controller
 {
@@ -27,7 +29,7 @@ class AuthController extends Controller
 
         return $this->apiResponse([
             'token' => $token->plainTextToken,
-            'user' => $user
+            'user' => new UserResource($user)
         ], 'user created sussessfully', 200);
     }
 
@@ -46,9 +48,7 @@ class AuthController extends Controller
 
         $token = $user->createtoken($user->name);
 
-        return $this->apiResponse([
-            'user' => $user
-        ], 'wellcome to the app', 200, $token->plainTextToken);
+        return $this->apiResponse(new UserResource($user), 'wellcome to the app', 200, $token->plainTextToken);
     }
 
     public function logout(Request $request)
@@ -60,3 +60,37 @@ class AuthController extends Controller
         ];
     }
 }
+    /* public function editUserData(Request $request) 
+    {
+      
+        $user = $request->user();
+
+        if($user == null)
+        {
+            return $this->apiResponse(null,"something went wrong",400);
+        }
+
+        if($request->has('name'))
+        {
+            $request->validate([
+                'name'=>'unique:users'
+            ]);
+
+            $user->update([
+                'name'=>$request->name
+            ]);
+        }
+
+
+        $user->update([
+          'password' => $request->has('password')? $request->password : $user->password
+          'tall',
+          'weight',
+          'gender',
+          'BMI',
+          'target_calories',
+          'date_of_birth',
+          'reminder',
+          'level_id',
+        ])
+    } */
