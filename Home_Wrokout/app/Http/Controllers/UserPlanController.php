@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\UserPlan;
 use App\Http\Requests\StoreUserPlanRequest;
 use App\Http\Requests\UpdateUserPlanRequest;
+use App\Http\Resources\PlanResource;
 use App\Models\Plan;
 use Illuminate\Http\Request;
 use App\Models\User;
@@ -113,5 +114,22 @@ class UserPlanController extends Controller
             $plan->number_of_day_to_train,
             $plan->current_day
         ], "this is your plan", 200);
+    }
+
+    public function getPlansByUserLevelID(Request $request)
+    {
+        $user = $request->user();
+
+        if ($user == null) {
+            return $this->apiResponse(null, "Something went wrong", 400);
+        }
+
+        $plans = Plan::where('level_id', '=', $user->level_id)->get();
+
+        if ($plans == null) {
+            return $this->apiResponse(null, "there is no plans for this level id", 404);
+        }
+
+        return $this->apiResponse(PlanResource::collection($plans), "thoes are plans for your level", 200);
     }
 }
