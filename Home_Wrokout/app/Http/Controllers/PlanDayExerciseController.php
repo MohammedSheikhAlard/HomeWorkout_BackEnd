@@ -11,6 +11,8 @@ use PhpParser\Node\Stmt\Return_;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\StorePlanDayExerciseRequest;
 use App\Http\Requests\UpdatePlanDayExerciseRequest;
+use App\Models\BurnedCalories;
+use App\Models\UserPlanProgress;
 use Illuminate\Auth\Events\Validated;
 
 class PlanDayExerciseController extends Controller
@@ -120,4 +122,91 @@ class PlanDayExerciseController extends Controller
 
         return $this->apiResponse($planDayExercises, "this is your Exercises for today", 200);
     }
+
+    //************************************************************** */
+
+    public function getDayExercises(Request $request )
+    {
+         $request->validate([
+           'plan_day_id' => 'required|integer|exists:plan_days,id'
+        ]);
+        
+        $planDayId = $request->plan_day_id;
+
+        $user=$request->user();
+
+       $planDay = PlanDay::where('id', $planDayId)->firstOrFail();
+        if (!$planDay) {
+        return $this->apiResponse(null, "Todaay is not available", 404);
+    }
+
+        if ($planDay->is_rest_day) {
+            return $this->apiResponse(null,"Today is a holiday",200);    
+    }
+    
+    $exercises = PlanDayExercise::where('plan_day_id', $planDay->id)->get();
+     return $this->apiResponse(['is_rest_day' => false,'exercises' => $exercises ], "Today's exercises", 200);
+
+    }
+
+    public function completedDayExercises(Request $request)
+    {
+
+          $request->validate([
+           'plan_day_id' => 'required|integer|exists:plan_days,id'
+        ]);
+        
+        $planDayId = $request->plan_day_id;
+
+        $user = $request->user();
+        $today = now()->format('Y-m-d');
+
+        $day = PlanDay::where('id', $planDayId)->firstOrFail();
+
+        if ($day->is_rest_day) 
+        {
+            return $this->apiResponse(null, "Today is a holiday", 200);
+        }
+
+        $exercises = PlanDayExercise::where('plan_day_id', $day->id)->get();
+         if ($exercises->isEmpty())
+        {
+            return $this->apiResponse(null, "No exercises today", 404);
+        }
+
+        $totalCalories = $exercises->sum(function ($exercise) {
+
+            return $exercise->exerciseLevel->calories ?? 0;
+            });
+
+
+            $burned = BurnedCalories::firstOrNew([
+            'user_id' => $user->id,
+            'day_date' => $today
+            ]);
+
+            $burned->total_calories_burned_in_day =($burned->exists ? $burned->total_calories_burned_in_day : 0) + $totalCalories;
+            $burned->save();
+
+            $day->total_calories =($planDay->total_calories ?? 0) + $totalCalories;
+            $day->save();
+
+
+            $progress = UserPlanProgress::create([
+            'user_id' => $user->id,
+            'plan_day_id' => $planDayId,
+            'is_trained' =>true
+             ]);
+
+        return $this->apiResponse([
+            'total_calories_today' => $burned->total_calories_burned_in_day,
+            'plan_day_total_calories' => $day->total_calories
+            ],
+            "Exercises completed and calories saved",
+             200);
+
+
+    }
+
 }
+

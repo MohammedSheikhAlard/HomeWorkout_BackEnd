@@ -145,6 +145,8 @@ Route::group([
     Route::post('updatePlanDayExercise', [PlanDayExerciseController::class, 'updatePlanDayExercise'])->middleware('auth:sanctum');
     Route::get('getPlanDayExercise', [PlanDayExerciseController::class, 'getPlanDayExercise']);
     Route::get('getAllPlanDayExercises', [PlanDayExerciseController::class, 'getAllPlanDayExercises']);
+    Route::get('getDayExercises', [PlanDayExerciseController::class, 'getDayExercises']);
+    Route::post('completedDayExercises', [PlanDayExerciseController::class, 'completedDayExercises'])->middleware('auth:sanctum');
 });
 Route::group([
     'prefix' => 'userPlan'
