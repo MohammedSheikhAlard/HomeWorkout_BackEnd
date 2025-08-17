@@ -8,6 +8,7 @@ use App\Traits\apiResponseTrait;
 use App\Http\Resources\PlanDayResource;
 use App\Http\Requests\StorePlanDayRequest;
 use App\Http\Requests\UpdatePlanDayRequest;
+use App\Models\UserPlan;
 
 class PlanDayController extends Controller
 {
@@ -64,6 +65,31 @@ class PlanDayController extends Controller
     public function getAllPlanDays(Request $request)
     {
         $planDays = PlanDay::where('plan_id', $request->plan_id)->get();
+
+        if ($planDays == null) {
+            return $this->apiResponse(null, "No plan days found", 404);
+        }
+
+        return $this->apiResponse(PlanDayResource::collection($planDays), "All plan days retrieved successfully", 200);
+    }
+
+    public function getAllUserPlanDays(Request $request)
+    {
+        $user = $request->user();
+
+        if ($user == null) {
+            $this->apiResponse(null, "There is something went wrong", 200);
+        }
+
+        $userPlan = UserPlan::where('user_id', '=', $user->id)
+            ->where('status', '=', 'active')->first();
+
+        if ($userPlan == null) {
+            return $this->apiResponse(null, "there is no active Plan", 200);
+        }
+
+        $planDays = PlanDay::where('plan_id', $userPlan->plan_id)->get();
+
 
         if ($planDays == null) {
             return $this->apiResponse(null, "No plan days found", 404);

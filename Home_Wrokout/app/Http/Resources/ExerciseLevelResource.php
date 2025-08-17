@@ -20,6 +20,7 @@ class ExerciseLevelResource extends JsonResource
             'exercise_id' => $this->exercise_id,
             'calories' => $this->calories,
             'number_of_rips' => $this->number_of_rips,
+            'timer' => $this->timer,
             'exercise' => new ExerciseResource($this->whenLoaded('exercise'))
         ];
     }

@@ -31,7 +31,6 @@ class UserPlanController extends Controller
             return $this->apiResponse(null, "This plan is already attached to the user", 404);
         }
 
-
         $startDate = now();
         $endDate = now()->addDays(30);
         $userPlan = UserPlan::create([
@@ -49,16 +48,19 @@ class UserPlanController extends Controller
     public function switchToNextPlan(Request $request)
     {
         $user = $request->user();
-        $request->validate([
-            'plan_id' => 'required|exists:plans,id',
-        ]);
 
+        if ($user == null) {
+            return $this->apiResponse(null, "there is something went Wrong", 400);
+        }
 
         $currentPlan = UserPlan::where('user_id', $user->id)->where('status', 'active')->where('end_date', '<', now())->first();
 
         if ($currentPlan) {
             $currentPlan->update(['status' => 'completed']);
 
+            if ($currentPlan->plan_id == 3) {
+                return $this->apiResponse(null, "you have finished Our Plans", 200);
+            }
 
             $newPlan = UserPlan::create([
                 'user_id' => $user->id,
@@ -75,7 +77,7 @@ class UserPlanController extends Controller
 
 
 
-    public function deletePlan(Request $request)
+    public function deleteCurrentUserPlan(Request $request)
     {
         $user = $request->user();
 
@@ -90,7 +92,7 @@ class UserPlanController extends Controller
         return $this->apiResponse(null, "Active plan deleted successfully", 200);
     }
 
-    public function getPlan(Request $request)
+    public function getUserCurrentPlan(Request $request)
     {
         $user = $request->user();
 
@@ -109,27 +111,10 @@ class UserPlanController extends Controller
         $plan = $userPlan->plan;
 
         return $this->apiResponse([
-            $plan->name,
-            $plan->description,
-            $plan->number_of_day_to_train,
-            $plan->current_day
+            "name" =>  $plan->name,
+            "description" => $plan->description,
+            "number_of_day_to_train" => $plan->number_of_day_to_train,
+            "current_day" => $userPlan->current_day
         ], "this is your plan", 200);
-    }
-
-    public function getPlansByUserLevelID(Request $request)
-    {
-        $user = $request->user();
-
-        if ($user == null) {
-            return $this->apiResponse(null, "Something went wrong", 400);
-        }
-
-        $plans = Plan::where('level_id', '=', $user->level_id)->get();
-
-        if ($plans == null) {
-            return $this->apiResponse(null, "there is no plans for this level id", 404);
-        }
-
-        return $this->apiResponse(PlanResource::collection($plans), "thoes are plans for your level", 200);
     }
 }

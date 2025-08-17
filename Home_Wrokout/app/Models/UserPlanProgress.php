@@ -11,7 +11,7 @@ class UserPlanProgress extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id',
+        'user_plan_id',
         'plan_day_id',
         'is_trained',
         'date',

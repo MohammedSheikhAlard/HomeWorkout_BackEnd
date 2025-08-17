@@ -60,6 +60,12 @@ class User extends Authenticatable
         return $this->belongsToMany(Plan::class, 'user_plans');
     }
 
+    public function userPlans()
+    {
+        return $this->hasMany(UserPlan::class);
+    }
+
+
     public function planDay()
     {
         return $this->belongsToMany(PlanDay::class, 'user_plan_progress');

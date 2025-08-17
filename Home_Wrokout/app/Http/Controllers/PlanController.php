@@ -101,4 +101,21 @@ class PlanController extends Controller
 
         return $this->apiResponse(PlanResource::collection($plans), "This is all plans", 200);
     }
+
+    public function getPlansByUserLevelID(Request $request)
+    {
+        $user = $request->user();
+
+        if ($user == null) {
+            return $this->apiResponse(null, "Something went wrong", 400);
+        }
+
+        $plans = Plan::where('level_id', '=', $user->level_id)->get();
+
+        if ($plans == null) {
+            return $this->apiResponse(null, "there is no plans for this level id", 404);
+        }
+
+        return $this->apiResponse(PlanResource::collection($plans), "thoes are plans for your level", 200);
+    }
 }

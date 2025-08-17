@@ -2,16 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\PlanDay;
+use App\Models\UserPlan;
 use Illuminate\Http\Request;
 use App\Models\ExerciseLevel;
 use App\Models\PlanDayExercise;
 use App\Traits\apiResponseTrait;
 use PhpParser\Node\Stmt\Return_;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Auth\Events\Validated;
 use App\Http\Requests\StorePlanDayExerciseRequest;
 use App\Http\Requests\UpdatePlanDayExerciseRequest;
-use Illuminate\Auth\Events\Validated;
+use Carbon\Carbon;
 
 class PlanDayExerciseController extends Controller
 {
@@ -101,7 +104,57 @@ class PlanDayExerciseController extends Controller
 
     public function getAllPlanDayExercises(Request $request)
     {
+        $planDayExercises = DB::table('plan_day_exercises')
+            ->join('plan_days', 'plan_days.id', '=', 'plan_day_exercises.plan_day_id', 'inner')
 
+            ->join('exercise_levels', 'exercise_levels.id', '=', 'plan_day_exercises.exercies_level_id', 'inner')
+
+            ->join('exercises', 'exercises.id', '=', 'exercise_levels.exercise_id', 'inner')
+
+            ->select('plan_day_exercises.id', 'exercises.name', 'exercises.description', 'exercises.image_path', 'exercise_levels.calories', 'exercise_levels.number_of_rips', 'plan_day_exercises.exercies_order')
+
+            ->where('plan_day_exercises.plan_day_id', '=', $request->plan_day_id)->get();
+
+        if ($planDayExercises == null) {
+            return  $this->apiResponse(null, "something went wrong", 400);
+        }
+
+        return $this->apiResponse($planDayExercises, "this is your Exercises for today", 200);
+    }
+
+    public function getAllUserPlanDayExercises(Request $request)
+    {
+        $request->validate([
+            'plan_day_id' => 'required|integer|exists:plan_days,id'
+        ]);
+
+        $user = $request->user();
+
+        if ($user == null) {
+            $this->apiResponse(null, "something went wrong", 400);
+        }
+
+        $planDay = PlanDay::find($request->plan_day_id);
+
+        if ($planDay->is_rest_day) {
+            return $this->apiResponse(null, "today is a rest day", 200);
+        }
+
+        $userPlan = UserPlan::with('plan')
+            ->where('user_id', $user->id)
+            ->where('status', 'active')
+            ->first();
+
+        if ($userPlan == null) {
+            return $this->apiResponse(null, "there is no active plan", 400);
+        }
+
+        $today = Carbon::now();
+        $daytoPlay = Carbon::parse($userPlan->start_date)->addDays($planDay->day_number - 1);
+
+        if ($today->lessThan($daytoPlay)) {
+            return $this->apiResponse(null, "it's not your day to play", 200);
+        }
 
         $planDayExercises = DB::table('plan_day_exercises')
             ->join('plan_days', 'plan_days.id', '=', 'plan_day_exercises.plan_day_id', 'inner')

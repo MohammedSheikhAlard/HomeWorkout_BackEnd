@@ -15,7 +15,9 @@ use App\Http\Controllers\LevelController;
 use App\Http\Controllers\PlanDayExerciseController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserPlanController;
+use App\Http\Controllers\UserPlanProgressController;
 use App\Models\BurnedCalories;
+use App\Models\UserPlanProgress;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -45,6 +47,12 @@ Route::group([
     Route::get('/getActivityData', [UserController::class, 'getActivityData'])->middleware('auth:sanctum');
 
     Route::post('/updateTargetCalories', [UserController::class, 'updateTargetCalories'])->middleware('auth:sanctum');
+
+    Route::post('/editBirthDate', [UserController::class, 'editBirthDate'])->middleware('auth:sanctum');
+
+    Route::get('/getUserAge', [UserController::class, 'getUserAge'])->middleware('auth:sanctum');
+
+    Route::post('/updateGender', [UserController::class, 'updateGender'])->middleware('auth:sanctum');
 });
 
 Route::group([
@@ -73,6 +81,7 @@ Route::group([
 ], function () {
 
     Route::get('/getAllLevel', [LevelController::class, 'getAllLevels'])->middleware('auth:sanctum');
+    Route::get('/getLevelsByCategoryID', [LevelController::class, 'getLevelsByCategoryID'])->middleware('auth:sanctum');
 });
 
 Route::group([
@@ -121,6 +130,7 @@ Route::group([
     Route::post('restorePlan', [PlanController::class, 'restorePlan'])->middleware('auth:sanctum');
     Route::get('getPlan', [PlanController::class, 'getPlan']);
     Route::get('getAllPlans', [PlanController::class, 'getAllPlans']);
+    Route::get('/getPlansByUserLevelID', [PlanController::class, 'getPlansByUserLevelID'])->middleware('auth:sanctum');
 });
 
 
@@ -133,6 +143,7 @@ Route::group([
     Route::post('updatePlanDay', [PlanDayController::class, 'updatePlanDay'])->middleware('auth:sanctum');
     Route::get('getPlanDay', [PlanDayController::class, 'getPlanDay']);
     Route::get('getAllPlanDays', [PlanDayController::class, 'getAllPlanDays']);
+    Route::get('getAllUserPlanDays', [PlanDayController::class, 'getAllUserPlanDays'])->middleware('auth:sanctum');
 });
 
 
@@ -145,17 +156,17 @@ Route::group([
     Route::post('updatePlanDayExercise', [PlanDayExerciseController::class, 'updatePlanDayExercise'])->middleware('auth:sanctum');
     Route::get('getPlanDayExercise', [PlanDayExerciseController::class, 'getPlanDayExercise']);
     Route::get('getAllPlanDayExercises', [PlanDayExerciseController::class, 'getAllPlanDayExercises']);
+    Route::get('getAllUserPlanDayExercises', [PlanDayExerciseController::class, 'getAllUserPlanDayExercises'])->middleware('auth:sanctum');;
 });
 Route::group([
     'prefix' => 'userPlan'
 
 ], function () {
 
-    Route::post('/link', [UserPlanController::class, 'LinkPlanToUser'])->middleware('auth:sanctum');
-    Route::post('/switch', [UserPlanController::class, 'switchToNextPlan'])->middleware('auth:sanctum');
-    Route::delete('/delete', [UserPlanController::class, 'deletePlan'])->middleware('auth:sanctum');
-    Route::get('/getPlan', [UserPlanController::class, 'getPlan'])->middleware('auth:sanctum');
-    Route::get('/getPlansByUserLevelID', [UserPlanController::class, 'getPlansByUserLevelID'])->middleware('auth:sanctum');
+    Route::post('/linkPlanToUser', [UserPlanController::class, 'LinkPlanToUser'])->middleware('auth:sanctum');
+    Route::post('/switch To Next Plan', [UserPlanController::class, 'switchToNextPlan'])->middleware('auth:sanctum');
+    Route::delete('/deleteCurrentUserPlan', [UserPlanController::class, 'deleteCurrentUserPlan'])->middleware('auth:sanctum');
+    Route::get('/getUserCurrentPlan', [UserPlanController::class, 'getUserCurrentPlan'])->middleware('auth:sanctum');
 });
 
 
@@ -167,4 +178,12 @@ Route::group([
     Route::post('/addExerciseCaloriesToday', [BurnedCaloriesController::class, 'addExerciseCaloriesToday'])->middleware('auth:sanctum');
     Route::post('/switch', [UserPlanController::class, 'switchToNextPlan'])->middleware('auth:sanctum');
     Route::delete('/delete', [UserPlanController::class, 'deletePlan'])->middleware('auth:sanctum');
+});
+
+Route::group([
+    'prefix' => 'userPlanProgress'
+
+], function () {
+
+    Route::post('/saveUserDailyProgress', [UserPlanProgressController::class, 'saveUserDailyProgress'])->middleware('auth:sanctum');
 });

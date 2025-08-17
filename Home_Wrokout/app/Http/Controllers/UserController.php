@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\BurnedCalories;
 use App\Traits\apiResponseTrait;
 use App\Http\Resources\UserResource;
+use Ramsey\Uuid\Codec\GuidStringCodec;
 
 class UserController extends Controller
 {
@@ -22,7 +24,7 @@ class UserController extends Controller
         $user = $request->user();
 
         if ($user == null) {
-            return $this->apiResponse(null, "something went wrong", 200);
+            return $this->apiResponse(null, "something went wrong", 400);
         }
 
         $user->reminder = $request->reminder;
@@ -37,7 +39,7 @@ class UserController extends Controller
         $user = $request->user();
 
         if ($user == null) {
-            return $this->apiResponse(null, "something went wrong", 200);
+            return $this->apiResponse(null, "something went wrong", 404);
         }
 
         return $this->apiResponse(new UserResource($user), "this is your reminder", 200);
@@ -52,7 +54,7 @@ class UserController extends Controller
         $user = $request->user();
 
         if ($user == null) {
-            return $this->apiResponse(null, "something went wrong", 200);
+            return $this->apiResponse(null, "something went wrong", 404);
         }
 
         $user->name = $request->name;
@@ -71,7 +73,7 @@ class UserController extends Controller
         $user = $request->user();
 
         if ($user == null) {
-            return $this->apiResponse(null, "something went wrong", 400);
+            return $this->apiResponse(null, "something went wrong", 404);
         }
 
         $user->password = $request->password;
@@ -86,7 +88,7 @@ class UserController extends Controller
         $user = $request->user();
 
         if ($user == null) {
-            return $this->apiResponse(null, "something went wrong", 400);
+            return $this->apiResponse(null, "something went wrong", 404);
         }
 
 
@@ -114,7 +116,7 @@ class UserController extends Controller
         $user = $request->user();
 
         if ($user == null) {
-            return $this->apiResponse(null, "something went wrong", 400);
+            return $this->apiResponse(null, "something went wrong", 404);
         }
 
         $user->target_calories = $request->target_calories;
@@ -134,7 +136,7 @@ class UserController extends Controller
         $user = $request->user();
 
         if ($user == null) {
-            return $this->apiResponse(null, "something went wrong", 400);
+            return $this->apiResponse(null, "something went wrong", 404);
         }
 
         $user->tall = $request->tall;
@@ -160,7 +162,7 @@ class UserController extends Controller
         $user = $request->user();
 
         if ($user == null) {
-            return $this->apiResponse(null, "there is something went wrong", 400);
+            return $this->apiResponse(null, "there is something went wrong", 404);
         }
 
         $user->level_id = $request->level_id;
@@ -179,11 +181,65 @@ class UserController extends Controller
         $user = $request->user();
 
         if ($user == null) {
-            return $this->apiResponse(null, "something went wrong", 400);
+            return $this->apiResponse(null, "something went wrong", 404);
         }
 
         $user->target_calories = $request->target_calories;
 
         return $this->apiResponse(new UserResource($user), "this is Your New Target Caloires", 200);
+    }
+
+    public function editBirthDate(Request $request)
+    {
+
+        $request->validate([
+            'date_of_birth' => 'required|date'
+        ]);
+
+        $user = $request->user();
+
+        if ($user == null) {
+            return $this->apiResponse(null, "something went wrong", 404);
+        }
+
+        $user->date_of_birth = $request->date_of_birth;
+
+        $user->save();
+
+        return $this->apiResponse($user, "this is new data", 200);
+    }
+
+    public function getUserAge(Request $request)
+    {
+        $user = $request->user();
+
+        if ($user == null) {
+            return $this->apiResponse(null, "something went wrong", 404);
+        }
+
+        return $this->apiResponse([
+            "Age" => Carbon::parse($user->date_of_birth)->age
+        ], "this is Your Age", 200);
+    }
+
+    public function updateGender(Request $request)
+    {
+        $request->validate([
+            'gender' => 'required'
+        ]);
+
+        $user = $request->user();
+
+        if ($user == null) {
+            return $this->apiResponse(null, "something went wrong", 404);
+        }
+
+        $user->gender = $request->gender;
+
+        $user->save();
+
+        return $this->apiResponse([
+            'gender' => $user->gender
+        ], "gender updated successfully", 200);
     }
 }
