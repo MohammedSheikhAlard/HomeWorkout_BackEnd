@@ -20,10 +20,22 @@ class AuthController extends Controller
         $fileds = $request->validate([
             'name' => 'required|unique:users',
             'password' => 'required| min:6',
+            'tall' => 'required|integer',
+            'weight' => 'required|integer',
+            'gender' => 'required',
+            'date_of_birth' => 'required|date',
             'level_id' => 'required',
         ]);
 
         $user = User::create($fileds);
+
+        $tall = $user->tall / 100;
+
+        $weight = $user->weight;
+
+        $user->BMI = round($weight / ($tall * $tall), 1);
+
+        $user->save();
 
         $token = $user->createtoken($request->name);
 

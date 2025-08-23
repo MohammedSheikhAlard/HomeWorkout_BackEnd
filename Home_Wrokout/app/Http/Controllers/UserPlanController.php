@@ -89,6 +89,7 @@ class UserPlanController extends Controller
         }
 
         $userPlan->delete();
+
         return $this->apiResponse(null, "Active plan deleted successfully", 200);
     }
 
