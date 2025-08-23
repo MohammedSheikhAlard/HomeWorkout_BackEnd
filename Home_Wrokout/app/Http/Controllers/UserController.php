@@ -7,6 +7,9 @@ use Illuminate\Http\Request;
 use App\Models\BurnedCalories;
 use App\Traits\apiResponseTrait;
 use App\Http\Resources\UserResource;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
+use phpDocumentor\Reflection\Types\Resource_;
 use Ramsey\Uuid\Codec\GuidStringCodec;
 
 class UserController extends Controller
@@ -76,7 +79,7 @@ class UserController extends Controller
             return $this->apiResponse(null, "something went wrong", 404);
         }
 
-        $user->password = $request->password;
+        $user->password = Hash::make($request->password);
 
         $user->save();
 
@@ -206,7 +209,7 @@ class UserController extends Controller
 
         $user->save();
 
-        return $this->apiResponse($user, "this is new data", 200);
+        return $this->apiResponse(new UserResource($user), "this is new data", 200);
     }
 
     public function getUserAge(Request $request)
@@ -241,5 +244,36 @@ class UserController extends Controller
         return $this->apiResponse([
             'gender' => $user->gender
         ], "gender updated successfully", 200);
+    }
+
+    public function getUserInfo(Request $request)
+    {
+        $user = $request->user();
+
+        if ($user == null) {
+            return $this->apiResponse(null, "Something went wrong", 400);
+        }
+
+        return $this->apiResponse(new UserResource($user), "this is Your Info", 200);
+    }
+
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'name' => "required|exists:users,name",
+            'password' => "required|min:6",
+        ]);
+
+        $user = User::where('name', '=', $request->name)->first();
+
+        if ($user == null) {
+            return $this->apiResponse(null, "there is something went wrong", 400);
+        }
+
+        $user->password = Hash::make($request->password);
+
+        $user->save();
+
+        return $this->apiResponse(new UserResource($user), "Your Password Updated", 200);
     }
 }

@@ -53,6 +53,10 @@ Route::group([
     Route::get('/getUserAge', [UserController::class, 'getUserAge'])->middleware('auth:sanctum');
 
     Route::post('/updateGender', [UserController::class, 'updateGender'])->middleware('auth:sanctum');
+
+    Route::get('/getUserInfo', [UserController::class, 'getUserInfo'])->middleware('auth:sanctum');
+
+    Route::post('/resetPassword', [UserController::class, 'resetPassword']);
 });
 
 Route::group([

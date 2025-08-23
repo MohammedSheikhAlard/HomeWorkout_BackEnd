@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('plan_days', function (Blueprint $table) {
             $table->id();
             $table->integer('day_number');
-            $table->integer('total_calories')->nullable();
+            $table->integer('total_calories')->nullable()->default(0);
             $table->boolean('is_rest_day');
             $table->foreignId('plan_id')->references('id')->on('plans');
             $table->timestamps();

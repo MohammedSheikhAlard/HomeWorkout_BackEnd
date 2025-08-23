@@ -3,11 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Exercise;
+use Illuminate\Http\Request;
+use App\Traits\apiResponseTrait;
+use Illuminate\Support\Facades\Storage;
+use App\Http\Resources\ExerciseResource;
 use App\Http\Requests\StoreExerciseRequest;
 use App\Http\Requests\UpdateExerciseRequest;
-use App\Http\Resources\ExerciseResource;
-use App\Traits\apiResponseTrait;
-use Illuminate\Http\Request;
 
 class ExerciseController extends Controller
 {
@@ -55,9 +56,10 @@ class ExerciseController extends Controller
         return $this->apiResponse(ExerciseResource::collection($exercises), "This is all exercisees", 200);
     }
 
+
     public function updateExercise(Request $request)
     {
-        $fildes = $request->validate([
+        $request->validate([
             'id' => 'required',
         ]);
 
@@ -68,13 +70,27 @@ class ExerciseController extends Controller
         $exercise->update([
             'name' => $request->has('name') ? $request->name : $exercise->name,
             'description' => $request->has('description') ? $request->description : $exercise->description,
-            'image_path' => $request->has('image_path') ? $request->image_path : $exercise->image_path,
+            'image_path' => $exercise->image_path, // keep old until replaced
             'category_id' => $request->has('category_id') ? $request->category_id : $exercise->category_id,
             'admin_id' => $admin->id,
         ]);
 
+        if ($request->hasFile('image_path')) {
+            // delete the old image if it exists
+            if ($exercise->image_path && Storage::disk('mohammed')->exists($exercise->image_path)) {
+                Storage::disk('mohammed')->delete($exercise->image_path);
+            }
+
+            // store new image
+            $imageName = $request->file('image_path')->getClientOriginalName();
+            $exercise->image_path = $request->file('image_path')->storeAs('exercises', $imageName, 'mohammed');
+        }
+
+        $exercise->save();
+
         return $this->apiResponse($exercise, "Exercise Updated Successfully", 200);
     }
+
 
     public function deleteExercise(Request $request)
     {

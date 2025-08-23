@@ -18,7 +18,8 @@ return new class extends Migration
             $table->date('start_date');
             $table->date('end_date');
             $table->integer('current_day')->default(1);
-            $table->enum('status', ['active', 'completed'])->default('active');
+            $table->enum('status', ['active', 'completed', 'deleted'])->default('active');
+            $table->softDeletes();
             $table->timestamps();
         });
     }
