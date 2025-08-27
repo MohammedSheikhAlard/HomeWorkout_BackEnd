@@ -120,6 +120,7 @@ Route::group([
     Route::get('/getAllExerciseLevelsByLevelId', [ExerciseLevelController::class, 'getAllExerciseLevelsByLevelId']);
     Route::get('/getExerciseLevelsByExerciesLevelId', [ExerciseLevelController::class, 'getExerciseLevelsByExerciesLevelId'])->middleware('auth:sanctum');
     Route::get('/getExerciseLevelsByExerciesLevelIdandCategoryId', [ExerciseLevelController::class, 'getExerciseLevelsByExerciesLevelIdandCategoryId'])->middleware('auth:sanctum');
+    Route::get('/getDailyChallenge', [ExerciseLevelController::class, 'getDailyChallenge'])->middleware('auth:sanctum');
 });
 
 

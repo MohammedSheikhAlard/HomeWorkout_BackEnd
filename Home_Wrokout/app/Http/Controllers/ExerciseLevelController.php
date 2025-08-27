@@ -127,4 +127,21 @@ class ExerciseLevelController extends Controller
 
         return $this->apiResponse(ExerciseLevelResource::collection($exerciseLevel), 'exercise levels by Exercise level id and categorie id', 200);
     }
+
+    public function getDailyChallenge(Request $request)
+    {
+        $user = $request->user();
+
+        if ($user == null) {
+            return $this->apiResponse(null, "something went wrong", 404);
+        }
+
+        $exerciseLevel = ExerciseLevel::with('exercise')->where('level_id', '=', $user->level_id)->inRandomOrder()->limit(4)->get();
+
+        if ($exerciseLevel->isEmpty()) {
+            return $this->apiResponse(null, 'No exercise level with this Level ID found', 404);
+        }
+
+        return $this->apiResponse(ExerciseLevelResource::collection($exerciseLevel), 'this is your daily challenge', 200);
+    }
 }

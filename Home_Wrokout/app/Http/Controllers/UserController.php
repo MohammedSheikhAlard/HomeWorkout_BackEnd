@@ -189,6 +189,8 @@ class UserController extends Controller
 
         $user->target_calories = $request->target_calories;
 
+        $user->save();
+
         return $this->apiResponse(new UserResource($user), "this is Your New Target Caloires", 200);
     }
 
