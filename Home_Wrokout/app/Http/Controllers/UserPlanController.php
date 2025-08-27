@@ -88,6 +88,8 @@ class UserPlanController extends Controller
             return $this->apiResponse(null, "No active plan found", 404);
         }
 
+        $userPlan->status = 'deleted';
+        $userPlan->save();
         $userPlan->delete();
 
         return $this->apiResponse(null, "Active plan deleted successfully", 200);
