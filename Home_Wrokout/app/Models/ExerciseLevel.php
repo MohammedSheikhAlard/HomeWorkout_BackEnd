@@ -28,4 +28,9 @@ class ExerciseLevel extends Model
     {
         return $this->belongsTo(Level::class);
     }
+
+    public function planDayExercises()
+    {
+        return $this->hasMany(PlanDayExercise::class, 'exercies_level_id');
+    }
 }

@@ -22,7 +22,12 @@ class Exercise extends Model
 
     protected function levels()
     {
-        return $this->belongsToMany(Level::class, 'exercies_levels');
+        return $this->belongsToMany(Level::class, 'exercise_levels')->withPivot(['calories']);
+    }
+
+    public function exerciseLevels()
+    {
+        return $this->hasMany(ExerciseLevel::class);
     }
 
     public function category()

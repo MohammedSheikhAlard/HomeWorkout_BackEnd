@@ -25,4 +25,29 @@ class PlanDayExercise extends Model
     {
         return $this->belongsTo(Exercise::class);
     }
+
+    public function exerciseLevel()
+    {
+        return $this->belongsTo(ExerciseLevel::class, 'exercies_level_id');
+    }
+
+    public function exercise()
+    {
+        return $this->belongsTo(Exercise::class, 'exercies_level_id');
+    }
+
+    protected static function booted()
+    {
+        static::created(function ($planDayExercise) {
+            $planDayExercise->planDay->updateTotalCalories();
+        });
+
+        static::updated(function ($planDayExercise) {
+            $planDayExercise->planDay->updateTotalCalories();
+        });
+
+        static::deleted(function ($planDayExercise) {
+            $planDayExercise->planDay->updateTotalCalories();
+        });
+    }
 }

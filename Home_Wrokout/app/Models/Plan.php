@@ -43,4 +43,9 @@ class Plan extends Model
     {
         return $this->hasMany(UserPlan::class);
     }
+
+    public function planDays()
+    {
+        return $this->hasMany(PlanDay::class);
+    }
 }

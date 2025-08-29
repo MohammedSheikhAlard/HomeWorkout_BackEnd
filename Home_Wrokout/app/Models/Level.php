@@ -29,4 +29,9 @@ class Level extends Model
     {
         return $this->hasMany(Plan::class, 'level_id');
     }
+
+    public function exerciseLevels()
+    {
+        return $this->hasMany(ExerciseLevel::class);
+    }
 }

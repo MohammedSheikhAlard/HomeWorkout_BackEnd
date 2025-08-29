@@ -61,7 +61,7 @@ class AdminController extends Controller
         if (!$request->session()->get('admin_logged_in')) {
             return redirect()->route('admin.login');
         }
-        $exercises = Exercise::with(['category', 'levels'])->orderBy('id')->get();
+        $exercises = Exercise::with(['category'])->orderBy('id')->get();
         $categories = category::orderBy('name')->get();
         return view('admin.exercises', compact('exercises', 'categories'));
     }
@@ -191,11 +191,19 @@ class AdminController extends Controller
             'admin_id' => $adminId,
         ]);
 
+        // if ($request->hasFile('image_path')) {
+        //     $imageName = $request->file('image_path')->getClientOriginalName();
+        //     $category->image_path = $request->file('image_path')->storeAs('categories', $imageName, 'mohammed');
+        //     $category->save();
+        // }
+
+        $imageName = $request->file('image_path')->getClientOriginalName();
+
         if ($request->hasFile('image_path')) {
-            $imageName = $request->file('image_path')->getClientOriginalName();
             $category->image_path = $request->file('image_path')->storeAs('categories', $imageName, 'mohammed');
-            $category->save();
         }
+
+        $category->save();
 
         return redirect()->route('admin.categories');
     }
@@ -211,13 +219,25 @@ class AdminController extends Controller
             'image_path' => 'nullable|image',
         ]);
 
-        $category->name = $request->name;
-        $category->description = $request->description;
+        $updateData = [
+            'name' => $request->name,
+            'description' => $request->description,
+        ];
+
+        // Handle image update
         if ($request->hasFile('image_path')) {
+            // Delete old image
+            if ($category->image_path) {
+                Storage::disk('mohammed')->delete($category->image_path);
+            }
+
+            // Store new image
             $imageName = $request->file('image_path')->getClientOriginalName();
-            $category->image_path = $request->file('image_path')->storeAs('categories', $imageName, 'mohammed');
+            $updateData['image_path'] = $request->file('image_path')->storeAs('categories', $imageName, 'mohammed');
         }
-        $category->save();
+
+        // Update all fields at once
+        $category->update($updateData);
 
         return redirect()->route('admin.categories');
     }
