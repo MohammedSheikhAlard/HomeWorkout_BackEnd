@@ -173,4 +173,109 @@ class PlanDayExerciseController extends Controller
 
         return $this->apiResponse($planDayExercises, "this is your Exercises for today", 200);
     }
+
+    ////////////////////////////////////////////////
+
+    public function webDayExercisesPage(Request $request, PlanDay $planDay)
+    {
+        if (!$request->session()->get('admin_logged_in')) {
+            return redirect()->route('admin.login');
+        }
+
+        $exercises = DB::table('plan_day_exercises')
+            ->join('exercise_levels', 'exercise_levels.id', '=', 'plan_day_exercises.exercies_level_id', 'inner')
+            ->join('exercises', 'exercises.id', '=', 'exercise_levels.exercise_id', 'inner')
+            ->select(
+                'plan_day_exercises.id',
+                'plan_day_exercises.exercies_level_id',
+                'exercises.name',
+                'exercises.description',
+                'exercises.image_path',
+                'exercise_levels.calories',
+                'exercise_levels.number_of_rips',
+                'plan_day_exercises.exercies_order'
+            )
+            ->where('plan_day_exercises.plan_day_id', '=', $planDay->id)
+            ->orderBy('plan_day_exercises.exercies_order')
+            ->get();
+
+        $availableExerciseLevels = DB::table('exercise_levels')
+            ->join('exercises', 'exercises.id', '=', 'exercise_levels.exercise_id')
+            ->select('exercise_levels.id', 'exercises.name', 'exercise_levels.calories')
+            ->where('exercise_levels.level_id', '=', $planDay->plan->level_id)
+            ->orderBy('exercises.name')
+            ->get();
+
+        return view('admin.plan_day_exercises', [
+            'planDay' => $planDay,
+            'exercises' => $exercises,
+            'availableExerciseLevels' => $availableExerciseLevels,
+        ]);
+    }
+
+    public function webAddExerciseToDay(Request $request, PlanDay $planDay)
+    {
+        if (!$request->session()->get('admin_logged_in')) {
+            return redirect()->route('admin.login');
+        }
+
+        if ($planDay->is_rest_day) {
+            return redirect()->route('admin.plans.day.exercises', $planDay)->with('error', "You can't add exercises for a rest day");
+        }
+
+        $request->validate([
+            'exercies_level_id' => 'required|exists:exercise_levels,id',
+            'exercies_order' => 'required|integer|min:1',
+        ]);
+
+        $existing = PlanDayExercise::where('plan_day_id', $planDay->id)
+            ->where('exercies_level_id', $request->exercies_level_id)
+            ->first();
+
+        if ($existing) {
+            return redirect()->route('admin.plans.day.exercises', $planDay)->with('error', 'This exercise is already added to this day');
+        }
+
+        PlanDayExercise::create([
+            'plan_day_id' => $planDay->id,
+            'exercies_level_id' => $request->exercies_level_id,
+            'exercies_order' => $request->exercies_order,
+        ]);
+
+        return redirect()->route('admin.plans.day.exercises', $planDay);
+    }
+
+    public function webUpdateExerciseInDay(Request $request, PlanDayExercise $planDayExercise)
+    {
+        if (!$request->session()->get('admin_logged_in')) {
+            return redirect()->route('admin.login');
+        }
+
+        $request->validate([
+            'exercies_level_id' => 'required|exists:exercise_levels,id',
+            'exercies_order' => 'required|integer|min:1',
+        ]);
+
+        $planDay = PlanDay::find($planDayExercise->plan_day_id);
+
+        $planDayExercise->update([
+            'exercies_level_id' => $request->exercies_level_id,
+            'exercies_order' => $request->exercies_order,
+        ]);
+
+        return redirect()->route('admin.plans.day.exercises', $planDay);
+    }
+
+    public function webDeleteExerciseFromDay(Request $request, PlanDayExercise $planDayExercise)
+    {
+        if (!$request->session()->get('admin_logged_in')) {
+            return redirect()->route('admin.login');
+        }
+
+        $planDay = PlanDay::find($planDayExercise->plan_day_id);
+
+        $planDayExercise->delete();
+
+        return redirect()->route('admin.plans.day.exercises', $planDay);
+    }
 }

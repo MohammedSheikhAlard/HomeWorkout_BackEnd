@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('description');
+            $table->decimal('price', 10, 2)->nullable();
             $table->integer('number_of_day_to_train');
             $table->softDeletes();
             $table->foreignId('admin_id')->references('id')->on('admins');

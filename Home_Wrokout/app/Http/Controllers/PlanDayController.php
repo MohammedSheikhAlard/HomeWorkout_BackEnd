@@ -9,6 +9,7 @@ use App\Http\Resources\PlanDayResource;
 use App\Http\Requests\StorePlanDayRequest;
 use App\Http\Requests\UpdatePlanDayRequest;
 use App\Models\UserPlan;
+use App\Models\Plan;
 
 class PlanDayController extends Controller
 {
@@ -96,5 +97,83 @@ class PlanDayController extends Controller
         }
 
         return $this->apiResponse(PlanDayResource::collection($planDays), "All plan days retrieved successfully", 200);
+    }
+
+    /////////////////////////////////////
+
+    public function webPlanDaysPage(Request $request, Plan $plan)
+    {
+        if (!$request->session()->get('admin_logged_in')) {
+            return redirect()->route('admin.login');
+        }
+        $days = PlanDay::where('plan_id', $plan->id)->orderBy('day_number')->get();
+        return view('admin.plan_days', [
+            'plan' => $plan,
+            'days' => $days,
+        ]);
+    }
+
+    public function webPlanDayStore(Request $request, Plan $plan)
+    {
+        if (!$request->session()->get('admin_logged_in')) {
+            return redirect()->route('admin.login');
+        }
+
+        $request->validate([
+            'day_number' => 'required|integer',
+            'is_rest_day' => 'required|boolean',
+        ]);
+
+        PlanDay::create([
+            'day_number' => $request->day_number,
+            'total_calories' => 0,
+            'is_rest_day' => $request->is_rest_day,
+            'plan_id' => $plan->id,
+        ]);
+
+        return redirect()->route('admin.plans.days', $plan);
+    }
+
+    public function webPlanDayUpdate(Request $request, PlanDay $planDay)
+    {
+        if (!$request->session()->get('admin_logged_in')) {
+            return redirect()->route('admin.login');
+        }
+
+        $request->validate([
+            'day_number' => 'required|integer',
+            'is_rest_day' => 'required|boolean',
+        ]);
+
+        $planDay->update([
+            'day_number' => $request->day_number,
+            'is_rest_day' => $request->is_rest_day,
+        ]);
+
+        return redirect()->route('admin.plans.days', $planDay->plan);
+    }
+
+    public function webPlanDayDelete(Request $request, PlanDay $planDay)
+    {
+        if (!$request->session()->get('admin_logged_in')) {
+            return redirect()->route('admin.login');
+        }
+
+        $plan = $planDay->plan;
+        $planDay->delete();
+
+        return redirect()->route('admin.plans.days', $plan);
+    }
+
+    public function webToggleRestDay(Request $request, PlanDay $planDay)
+    {
+        if (!$request->session()->get('admin_logged_in')) {
+            return redirect()->route('admin.login');
+        }
+
+        $planDay->is_rest_day = !$planDay->is_rest_day;
+        $planDay->save();
+
+        return redirect()->route('admin.plans.days', $planDay->plan);
     }
 }

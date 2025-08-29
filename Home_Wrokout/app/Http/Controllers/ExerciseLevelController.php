@@ -144,4 +144,125 @@ class ExerciseLevelController extends Controller
 
         return $this->apiResponse(ExerciseLevelResource::collection($exerciseLevel), 'this is your daily challenge', 200);
     }
+
+    /////////////////////////////////
+
+    // WEB page: display exercise levels management
+    public function webExerciseLevelsPage(Request $request)
+    {
+        if (!$request->session()->get('admin_logged_in')) {
+            return redirect()->route('admin.login');
+        }
+
+        $exerciseLevels = ExerciseLevel::with(['exercise', 'level'])->orderBy('id')->get();
+        $exercises = Exercise::orderBy('name')->get();
+        $levels = Level::orderBy('id')->get();
+
+        return view('admin.exercise_levels', compact('exerciseLevels', 'exercises', 'levels'));
+    }
+
+    // WEB method: store new exercise level
+    public function webExerciseLevelStore(Request $request)
+    {
+        if (!$request->session()->get('admin_logged_in')) {
+            return redirect()->route('admin.login');
+        }
+
+        $request->validate([
+            'exercise_id' => 'required|exists:exercises,id',
+            'level_id' => 'required|exists:levels,id',
+            'calories' => 'required|integer|min:1',
+            'number_of_rips' => 'nullable|integer|min:1',
+            'timer' => 'nullable|integer|min:1',
+        ]);
+
+        ExerciseLevel::create([
+            'exercise_id' => $request->exercise_id,
+            'level_id' => $request->level_id,
+            'calories' => $request->calories,
+            'number_of_rips' => $request->number_of_rips,
+            'timer' => $request->timer ?? 30,
+        ]);
+
+        return redirect()->route('admin.exercise-levels');
+    }
+
+    // WEB method: update exercise level
+    public function webExerciseLevelUpdate(Request $request, ExerciseLevel $exerciseLevel)
+    {
+        if (!$request->session()->get('admin_logged_in')) {
+            return redirect()->route('admin.login');
+        }
+
+        $request->validate([
+            'exercise_id' => 'required|exists:exercises,id',
+            'level_id' => 'required|exists:levels,id',
+            'calories' => 'required|integer|min:1',
+            'number_of_rips' => 'nullable|integer|min:1',
+            'timer' => 'nullable|integer|min:1',
+        ]);
+
+        $exerciseLevel->update([
+            'exercise_id' => $request->exercise_id,
+            'level_id' => $request->level_id,
+            'calories' => $request->calories,
+            'number_of_rips' => $request->number_of_rips,
+            'timer' => $request->timer ?? 30,
+        ]);
+
+        return redirect()->route('admin.exercise-levels');
+    }
+
+    // WEB method: delete exercise level
+    public function webExerciseLevelDelete(Request $request, ExerciseLevel $exerciseLevel)
+    {
+        if (!$request->session()->get('admin_logged_in')) {
+            return redirect()->route('admin.login');
+        }
+
+        $exerciseLevel->delete();
+        return redirect()->route('admin.exercise-levels');
+    }
+
+    // WEB method: display trashed exercise levels
+    public function webExerciseLevelsTrashedPage(Request $request)
+    {
+        if (!$request->session()->get('admin_logged_in')) {
+            return redirect()->route('admin.login');
+        }
+
+        $exerciseLevels = ExerciseLevel::onlyTrashed()->with(['exercise', 'level'])->orderBy('deleted_at', 'desc')->get();
+        $exercises = Exercise::orderBy('name')->get();
+        $levels = Level::orderBy('id')->get();
+
+        return view('admin.exercise_levels-trashed', compact('exerciseLevels', 'exercises', 'levels'));
+    }
+
+    // WEB method: restore exercise level
+    public function webExerciseLevelRestore(Request $request, $id)
+    {
+        if (!$request->session()->get('admin_logged_in')) {
+            return redirect()->route('admin.login');
+        }
+
+        $exerciseLevel = ExerciseLevel::onlyTrashed()->findOrFail($id);
+        $exerciseLevel->restore();
+        return redirect()->route('admin.exercise-levels.trashed')->with('success', 'Exercise level restored successfully!');
+    }
+
+    // WEB method: force delete exercise level
+    public function webExerciseLevelForceDelete(Request $request, $id)
+    {
+        if (!$request->session()->get('admin_logged_in')) {
+            return redirect()->route('admin.login');
+        }
+
+        $exerciseLevel = ExerciseLevel::onlyTrashed()->findOrFail($id);
+
+        // فحص إذا كان هناك مستخدمين مرتبطين بهذا المستوى
+        // يمكن إضافة فحص إضافي هنا إذا كان هناك علاقات أخرى
+
+        $exerciseLevel->forceDelete();
+        return redirect()->route('admin.exercise-levels.trashed')->with('success', 'Exercise level permanently deleted successfully!');
+    }
 }

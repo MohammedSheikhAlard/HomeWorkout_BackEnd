@@ -19,6 +19,7 @@ return new class extends Migration
             $table->integer('number_of_rips')->nullable(true);
             $table->integer('timer')->default(30);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

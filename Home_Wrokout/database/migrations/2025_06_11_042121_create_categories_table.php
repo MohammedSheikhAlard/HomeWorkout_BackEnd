@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('image_path');
             $table->foreignId('admin_id')->references('id')->on('admins');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
