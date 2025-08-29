@@ -103,9 +103,9 @@ class WalletController extends Controller
             return $this->apiResponse(null, "something went wrong", 400);
         }
 
-        $wallet = Wallet::where('user_id', '=', $user->id)->get();
+        $wallet = Wallet::where('user_id', $user->id)->first();
 
-        if ($wallet == null) {
+        if (!$wallet) {
             return $this->apiResponse([
                 'have Wallet' => false
             ], "there is no wallet for this user", 404);
