@@ -78,6 +78,8 @@ Route::group([
     Route::get('/getAllCategory', [CategoryController::class, 'getAllCategory'])->middleware('auth:sanctum');
     Route::delete('/deleteCategory', [CategoryController::class, 'deleteCategory'])->middleware('auth:sanctum');
     Route::get('/getAllUserCategory', [CategoryController::class, 'getAllUserCategory'])->middleware('auth:sanctum');
+    Route::get('/getHiitCategory', [CategoryController::class, 'getHiitCategory'])->middleware('auth:sanctum');
+    Route::get('/getStretchCategory', [CategoryController::class, 'getStretchCategory'])->middleware('auth:sanctum');
 });
 
 Route::group([
@@ -106,6 +108,7 @@ Route::group([
     Route::get('/transactions', [WalletController::class, 'getTransactions'])->middleware('auth:sanctum');
     Route::post('/create', [WalletController::class, 'createWallet'])->middleware('auth:sanctum');
     Route::get('/checkUserHaveWallet', [WalletController::class, 'checkUserHaveWallet'])->middleware('auth:sanctum');
+    Route::post('/inroleInPlan', [WalletController::class, 'inroleInPlan'])->middleware('auth:sanctum');
 });
 
 
@@ -136,6 +139,7 @@ Route::group([
     Route::get('getPlan', [PlanController::class, 'getPlan']);
     Route::get('getAllPlans', [PlanController::class, 'getAllPlans']);
     Route::get('/getPlansByUserLevelID', [PlanController::class, 'getPlansByUserLevelID'])->middleware('auth:sanctum');
+    Route::get('/getPaidPlans', [PlanController::class, 'getPaidPlans'])->middleware('auth:sanctum');
 });
 
 
@@ -192,3 +196,8 @@ Route::group([
 
     Route::post('/saveUserDailyProgress', [UserPlanProgressController::class, 'saveUserDailyProgress'])->middleware('auth:sanctum');
 });
+
+
+Route::get('/user/count', [AdminController::class, 'getUsersCount']);
+Route::get('/plan/activeCount', [AdminController::class, 'getActivePlansCount']);
+Route::get('/user/byLevelCounts', [AdminController::class, 'getUsersByLevelCounts']);

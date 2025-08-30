@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,12 +8,14 @@
     <link rel="stylesheet" href="{{ asset('css/admin-dashboard.css') }}">
     <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
 </head>
+
 <body>
     <div class="layout">
-        <!-- Sidebar -->
         <aside class="sidebar">
             <div class="sb-header">
-                <div style="width:32px;height:32px;border-radius:8px;background:#a60000;display:grid;place-items:center">🏋️</div>
+                <div
+                    style="width:32px;height:32px;border-radius:8px;background:#a60000;display:grid;place-items:center">
+                    🏋️</div>
                 <div class="brand">Home Workout</div>
             </div>
             <nav class="menu">
@@ -31,7 +34,7 @@
             </div>
         </aside>
 
-        <!-- Main -->
+
         <main class="main">
             <div class="topbar">
                 <div></div>
@@ -43,7 +46,6 @@
                     <span class="muted">A quick look at your home workout platform</span>
                 </div>
 
-                <!-- Stats row -->
                 <section class="grid stats" style="margin-bottom:14px">
                     <div class="card" style="grid-column: span 6">
                         <div class="stat-icon">📈</div>
@@ -61,25 +63,23 @@
                     </div>
                 </section>
 
-                <!-- Users Per Level -->
                 <section class="grid">
                     <div class="card chart-card" style="grid-column: span 12">
                         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
                             <div style="font-weight:700">Users by Level</div>
                             <div class="muted" id="levels-info">Loading levels...</div>
                         </div>
-                        <canvas id="users-by-level-chart" height="180" style="width:100%;max-width:520px;display:block;margin:0 auto"></canvas>
+                        <canvas id="users-by-level-chart" height="180"
+                            style="width:100%;max-width:520px;display:block;margin:0 auto"></canvas>
                         <div class="legend" id="chart-legend">
-                            <!-- Legend will be generated dynamically -->
                         </div>
                     </div>
                 </section>
             </div>
         </main>
     </div>
-    
+
     <script src="{{ asset('js/dashboard.js') }}"></script>
 </body>
+
 </html>
-
-

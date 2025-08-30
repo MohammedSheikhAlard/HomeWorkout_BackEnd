@@ -78,7 +78,7 @@ class User extends Authenticatable
 
     public function level()
     {
-        return $this->hasOne(Level::class);
+        return $this->belongsTo(Level::class);
     }
 
     public function burned_calories()

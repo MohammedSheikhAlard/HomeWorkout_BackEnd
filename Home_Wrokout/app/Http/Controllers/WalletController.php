@@ -2,14 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Wallet;
-use Illuminate\Http\Request;
-use App\Http\Requests\StoreWalletRequest;
-use App\Http\Requests\UpdateWalletRequest;
-use App\Models\Transaction;
+use App\Models\Plan;
 use App\Models\User;
+use App\Models\Wallet;
+use App\Models\UserPlan;
+use App\Models\Transaction;
+use Illuminate\Http\Request;
 use App\Traits\apiResponseTrait;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\StoreWalletRequest;
+use App\Http\Requests\UpdateWalletRequest;
 
 
 class WalletController extends Controller
@@ -114,5 +116,46 @@ class WalletController extends Controller
         return $this->apiResponse([
             'have Wallet' => true
         ], "there is wallet for this user", 200);
+    }
+
+    public function inroleInPlan(Request $request)
+    {
+        $user = $request->user();
+
+        if ($user == null) {
+            return $this->apiResponse(null, "something went wrong", 400);
+        }
+
+        $plan = Plan::findOrFail($request->plan_id);
+
+        if ($plan == null) {
+            $this->apiResponse(null, "something went wrong", 404);
+        }
+
+        $alreadyExists = UserPlan::where('user_id', $user->id)->where('plan_id', $request->plan_id)->exists();
+
+        if ($alreadyExists) {
+            return $this->apiResponse(null, "This plan is already attached to the user", 404);
+        }
+
+        $wallet = $user->wallet;
+
+        if ($plan->price <= $wallet->balance) {
+            $wallet->balance = $wallet->balance - $plan->price;
+            $wallet->save();
+
+
+            $startDate = now();
+            $endDate = now()->addDays(30);
+            $userPlan = UserPlan::create([
+                'user_id' => $user->id,
+                'plan_id' => $request->plan_id,
+                'start_date' => $startDate,
+                'end_date' => $endDate,
+                'status' => 'active',
+            ]);
+            return $this->apiResponse($userPlan, "Linked successfully", 200);
+        }
+        return $this->apiResponse(null, "You don't have enough money in your balance", 200);
     }
 }

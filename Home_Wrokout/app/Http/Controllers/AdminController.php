@@ -2,13 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\Admin;
-use App\Models\Exercise;
+use App\Models\Level;
 use App\Models\category;
-use Illuminate\Support\Facades\Storage;
+use App\Models\Exercise;
 use Illuminate\Http\Request;
 use App\Traits\apiResponseTrait;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\StoreAdminRequest;
 use App\Http\Requests\UpdateAdminRequest;
 
@@ -299,12 +301,12 @@ class AdminController extends Controller
             return redirect()->route('admin.login');
         }
 
-        $users = \App\Models\User::with('level')->orderBy('created_at', 'desc')->get();
-        $levels = \App\Models\Level::orderBy('name')->get();
+        $users = User::with('level')->orderBy('created_at', 'desc')->get();
+        $levels = Level::orderBy('name')->get();
         return view('admin.users', compact('users', 'levels'));
     }
 
-    public function userDelete(Request $request, \App\Models\User $user)
+    public function userDelete(Request $request, User $user)
     {
         if (!$request->session()->get('admin_logged_in')) {
             return redirect()->route('admin.login');
@@ -422,5 +424,43 @@ class AdminController extends Controller
         return [
             'message' => 'You are logged out'
         ];
+    }
+
+    public function getUsersCount()
+    {
+        $count = User::count();
+        return response()->json([
+            'data' => ['count' => $count]
+        ]);
+    }
+
+    public function getActivePlansCount()
+    {
+        $count = \App\Models\Plan::count();
+        return response()->json([
+            'data' => ['count' => $count]
+        ]);
+    }
+
+    public function getUsersByLevelCounts()
+    {
+        $usersByLevel = User::with('level')
+            ->selectRaw('level_id, COUNT(*) as count')
+            ->groupBy('level_id')
+            ->get()
+            ->mapWithKeys(function ($item) {
+                $levelName = $item->level ? $item->level->name : 'Unknown';
+                return [$levelName => $item->count];
+            })
+            ->toArray();
+
+        $labels = array_keys($usersByLevel);
+
+        return response()->json([
+            'data' => [
+                'counts' => $usersByLevel,
+                'labels' => $labels
+            ]
+        ]);
     }
 }

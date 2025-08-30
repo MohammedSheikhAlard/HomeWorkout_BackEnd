@@ -21,6 +21,7 @@ class PlanController extends Controller
         $request->validate([
             'name' => 'required',
             'description' => 'required',
+            'price' => 'nullable|numeric|min:0',
             'number_of_day_to_train' => 'required',
             'level_id' => 'required'
         ]);
@@ -30,6 +31,7 @@ class PlanController extends Controller
         $plan  = Plan::create([
             'name' => $request->name,
             'description' => $request->description,
+            'price' => $request->price,
             'number_of_day_to_train' => $request->number_of_day_to_train,
             'admin_id' => $admin->id,
             'level_id' => $request->level_id,
@@ -44,13 +46,28 @@ class PlanController extends Controller
 
     public function updatePlan(Request $request)
     {
+        $request->validate([
+            'id' => 'required|exists:plans,id',
+            'name' => 'required',
+            'description' => 'required',
+            'price' => 'nullable|numeric|min:0',
+            'number_of_day_to_train' => 'required',
+            'level_id' => 'required'
+        ]);
+
         $plan = Plan::find($request->id);
 
         if ($plan == null) {
             return $this->apiResponse(null, "Your Plan Was not found", 404);
         }
 
-        $plan->update($request->all());
+        $plan->update([
+            'name' => $request->name,
+            'description' => $request->description,
+            'price' => $request->price,
+            'number_of_day_to_train' => $request->number_of_day_to_train,
+            'level_id' => $request->level_id,
+        ]);
 
         return $this->apiResponse($plan, "plan Updated Successfully", 200);
     }
@@ -118,6 +135,24 @@ class PlanController extends Controller
         }
 
         return $this->apiResponse(PlanResource::collection($plans), "thoes are plans for your level", 200);
+    }
+
+
+    public function getPaidPlans(Request $request)
+    {
+        $user = $request->user();
+
+        if ($user == null) {
+            return $this->apiResponse(null, "Something went wrong", 400);
+        }
+
+        $plans = Plan::where('price', '>', 0)->get();
+
+        if ($plans->isEmpty()) {
+            return $this->apiResponse(null, "there is no paid plans in the system", 200);
+        }
+
+        return $this->apiResponse(new PlanResource($plans), "this is the paid plans", 200);
     }
 
     /////////////////////////////////////////

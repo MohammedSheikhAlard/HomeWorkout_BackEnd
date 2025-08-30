@@ -49,7 +49,7 @@ class CategoryController extends Controller
 
         if ($request->hasFile('image_path')) {
             $imageName = time() . '_' . $request->file('image_path')->getClientOriginalName();
-            $imagePath = $request->file('image_path')->storeAs('categories', $imageName, 'public');
+            $imagePath = $request->file('image_path')->storeAs('categories', $imageName, 'mohammed');
             $category->image_path = $imagePath;
         }
 
@@ -74,12 +74,12 @@ class CategoryController extends Controller
         $category->description = $request->description;
 
         if ($request->hasFile('image_path')) {
-            if ($category->image_path && Storage::disk('public')->exists($category->image_path)) {
-                Storage::disk('public')->delete($category->image_path);
+            if ($category->image_path && Storage::disk('mohammed')->exists($category->image_path)) {
+                Storage::disk('mohammed')->delete($category->image_path);
             }
 
             $imageName = time() . '_' . $request->file('image_path')->getClientOriginalName();
-            $imagePath = $request->file('image_path')->storeAs('categories', $imageName, 'public');
+            $imagePath = $request->file('image_path')->storeAs('categories', $imageName, 'mohammed');
             $category->image_path = $imagePath;
         }
 
@@ -94,8 +94,8 @@ class CategoryController extends Controller
             return redirect()->route('admin.login');
         }
 
-        if ($category->image_path && Storage::disk('public')->exists($category->image_path)) {
-            Storage::disk('public')->delete($category->image_path);
+        if ($category->image_path && Storage::disk('mohammed')->exists($category->image_path)) {
+            Storage::disk('mohammed')->delete($category->image_path);
         }
 
         $category->delete();
@@ -197,5 +197,39 @@ class CategoryController extends Controller
         }
 
         return $this->apiResponse(new CategoryResource($categories), "this is all categories", 200);
+    }
+
+    public function getHiitCategory(Request $request)
+    {
+        $user = $request->user();
+
+        if ($user == null) {
+            return $this->apiResponse(null, "Something went wrong", 404);
+        }
+
+        $category = category::where('name', '=', 'Hiit')->get();
+
+        if ($category == null) {
+            return $this->apiResponse(null, "there is no category with this name", 404);
+        }
+
+        return $this->apiResponse(new CategoryResource($category), "this is your category", 200);
+    }
+
+    public function getStretchCategory(Request $request)
+    {
+        $user = $request->user();
+
+        if ($user == null) {
+            return $this->apiResponse(null, "Something went wrong", 404);
+        }
+
+        $category = category::where('name', '=', 'Stretch')->get();
+
+        if ($category == null) {
+            return $this->apiResponse(null, "there is no category with this name", 404);
+        }
+
+        return $this->apiResponse(new CategoryResource($category), "this is your category", 200);
     }
 }

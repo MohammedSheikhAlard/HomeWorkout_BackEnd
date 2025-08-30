@@ -14,6 +14,7 @@ class Plan extends Model
     protected $fillable = [
         'name',
         'description',
+        'price',
         'number_of_day_to_train',
         'admin_id',
         'level_id',

@@ -22,7 +22,7 @@ class Level extends Model
 
     public function users()
     {
-        return $this->belongsToMany(User::class, 'level_id');
+        return $this->hasMany(User::class, 'level_id');
     }
 
     public function plans()
